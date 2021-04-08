@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "346289229343",
+    "project_id": "doghush-62579",
+    "storage_bucket": "doghush-62579.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346289229343:android:0582b0bea6efdc80cbcf2a",
+        "android_client_info": {
+          "package_name": "com.example.DogHush"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346289229343-mc9tk06mg6t8c59bivi2p5rl78mj93ca.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.DogHush",
+            "certificate_hash": "00148052594cf52a5163d00667c02c2f2c874698"
+          }
+        },
+        {
+          "client_id": "346289229343-vovk2sfg6lfemmp27occe3ist5sih59g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPE0EUMTB5M1FqMArDOGrM_AiXY-pm0mk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346289229343-vovk2sfg6lfemmp27occe3ist5sih59g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
