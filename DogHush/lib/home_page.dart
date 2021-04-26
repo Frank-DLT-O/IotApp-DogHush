@@ -17,7 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  LoginBloc _loginBloc;
   final _textController = TextEditingController();
   Directory appDirectory;
   Stream<FileSystemEntity> fileStream;

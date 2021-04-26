@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +8,8 @@ class RecordListView extends StatefulWidget {
   final String mascota;
   const RecordListView({
     Key key,
-    this.records, this.mascota,
+    this.records,
+    this.mascota,
   }) : super(key: key);
 
   @override
@@ -52,7 +55,7 @@ class _RecordListViewState extends State<RecordListView> {
                 child: ExpansionTile(
                   title: Text(
                     'Grabación para ${widget.mascota}: ${widget.records.length - i - 2}',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 12.5),
                   ),
                   subtitle: Text(_getDateFromFilePatah(
                       filePath: widget.records.elementAt(i))),
@@ -72,21 +75,52 @@ class _RecordListViewState extends State<RecordListView> {
                         children: [
                           LinearProgressIndicator(
                             minHeight: 5,
-                            backgroundColor: Colors.black,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+                            backgroundColor: Colors.white,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.greenAccent),
                             value:
                                 _selectedIndex == i ? _completedPercentage : 0,
                           ),
-                          IconButton(
-                            icon: _selectedIndex == i
-                                ? _isPlaying
-                                    ? Icon(Icons.pause,color: Colors.greenAccent)
-                                    : Icon(Icons.play_arrow,color: Colors.black87)
-                                : Icon(Icons.play_arrow,color: Colors.greenAccent),
-                            onPressed: () => _onPlay(
-                                filePath: widget.records.elementAt(i),
-                                index: i),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  child: MaterialButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Send!",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )),
+                              Expanded(
+                                child: IconButton(
+                                  icon: _selectedIndex == i
+                                      ? _isPlaying
+                                          ? Icon(Icons.pause,
+                                              color: Colors.greenAccent)
+                                          : Icon(Icons.play_arrow,
+                                              color: Colors.white)
+                                      : Icon(Icons.play_arrow,
+                                          color: Colors.greenAccent),
+                                  onPressed: () => _onPlay(
+                                      filePath: widget.records.elementAt(i),
+                                      index: i),
+                                ),
+                              ),
+                              
+                              Expanded(
+                                  child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    deleteAudio(File(widget.records.elementAt(i)));
+                                    widget.records.removeAt(i);
+                                  });
+                                  
+                                },
+                                icon: Icon(Icons.delete,
+                                          color: Colors.white),
+                              )),
+                            ],
                           ),
                         ],
                       ),
@@ -105,7 +139,7 @@ class _RecordListViewState extends State<RecordListView> {
 
   Future<void> _onPlay({@required String filePath, @required int index}) async {
     AudioPlayer audioPlayer = AudioPlayer();
-
+    print(filePath.substring(45)); //Filename
     if (!_isPlaying) {
       audioPlayer.play(filePath, isLocal: true);
       setState(() {
@@ -137,16 +171,27 @@ class _RecordListViewState extends State<RecordListView> {
   }
 
   String _getDateFromFilePatah({@required String filePath}) {
-    String fromEpoch = filePath.substring(
+    String filetime = filePath.substring(
         filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
 
     DateTime recordedDate =
-        DateTime.fromMillisecondsSinceEpoch(int.parse(fromEpoch));
+        DateTime.fromMillisecondsSinceEpoch(int.parse(filetime));
     int year = recordedDate.year;
     int month = recordedDate.month;
     int day = recordedDate.day;
+    int hour = recordedDate.hour;
+    int min = recordedDate.minute;
 
-    return ('$year-$month-$day');
+    return ('$year-$month-$day $hour\:$min');
     /*return ('21/04/21');*/
   }
+  Future<void> deleteAudio(File file) async {
+  try {
+    if (await file.exists()) {
+      await file.delete();
+    }
+  } catch (e) {
+    // Error in getting access to the file.
+  }
+}
 }
