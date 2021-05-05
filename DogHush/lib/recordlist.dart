@@ -3,6 +3,17 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+//Para mandar el archivo wav
+import 'dart:convert';
+import 'dart:typed_data';
+// ignore: avoid_web_libraries_in_flutter
+//import 'dart:html';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
+
+
+
 class RecordListView extends StatefulWidget {
   final List<String> records;
   final String mascota;
@@ -23,6 +34,7 @@ class _RecordListViewState extends State<RecordListView> {
   bool _isPlaying = false;
   int _selectedIndex = -1;
   int i = 2;
+  //InputElement uploadInput = FileUploadInputElement();
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -86,7 +98,9 @@ class _RecordListViewState extends State<RecordListView> {
                             children: [
                               Expanded(
                                   child: MaterialButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  sendFile(File(widget.records.elementAt(i)), widget.mascota);
+                                },
                                 child: Text(
                                   "Send!",
                                   style: TextStyle(color: Colors.white),
@@ -185,6 +199,8 @@ class _RecordListViewState extends State<RecordListView> {
     return ('$year-$month-$day $hour\:$min');
     /*return ('21/04/21');*/
   }
+
+
   Future<void> deleteAudio(File file) async {
   try {
     if (await file.exists()) {
@@ -194,4 +210,89 @@ class _RecordListViewState extends State<RecordListView> {
     // Error in getting access to the file.
   }
 }
+
+ /*void uploadFile() async {
+  uploadInput.draggable = true;
+  uploadInput.click();
+  uploadInput.onChange.listen((e) {
+    // read file content as dataURL
+    final files = uploadInput.files;
+    final reader = new FileReader();
+
+    if (files.length == 1) {
+      final file = files[0];
+
+      reader.onLoad.listen((e) {
+        sendFile(reader.result);
+      });
+
+      reader.readAsDataUrl(file);
+    }
+  });
+}*/
+
+sendFile(File file, String name) async {
+  /*var url = Uri.parse("http://localhost:3000/upload");
+  var request = new http.MultipartRequest("POST", url);
+  Uint8List _bytesData =
+      Base64Decoder().convert(file.toString().split(",").last);
+  List<int> _selectedFile = _bytesData;
+
+  request.files.add(http.MultipartFile.fromBytes('file', _selectedFile,
+      contentType: new MediaType('application', 'octet-stream'),
+      filename: "sound.wav"));
+
+  request.send().then((response) {
+    print("test");
+    print(response.statusCode);
+    if (response.statusCode == 200) print("Uploaded!");
+  });*/
+
+String  x = await getFunction();
+   print(x);
+  
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey[300],
+        title: Text('Sonido Enviado, Woof!',
+                                  style: TextStyle(color: Colors.green)),
+        content: Container(
+          child: Text('Dohush: Nuevo mensaje para '  + name,
+                                  style: TextStyle(color: Colors.green)),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Ok',
+                                  style: TextStyle(color: Colors.green)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+      },
+  );
+  
+}
+
+Future<String> getFunction() async {
+  
+    Response response = await get('https://n6n3fk1q23.execute-api.us-east-1.amazonaws.com/dev/movil');
+    String _productsApiList = "";
+    print("API Response Code: ${response.statusCode}");
+
+     if (response.statusCode == 200) {
+      _productsApiList = response.body;
+      //print(data);
+      //return _productsApiList;
+      
+      
+    }
+
+    return _productsApiList;
+  }
+
+
 }
