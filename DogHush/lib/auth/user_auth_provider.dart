@@ -1,9 +1,24 @@
+//import 'dart:js';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserAuthProvider {
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>['email']);
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  var userArr = [];
+
+  Future<List> getUserInfo() async {
+    final googleUser = await _googleSignIn.signIn();
+    final googleAuth = await googleUser.authentication;
+    
+    userArr.add(googleUser.displayName);
+    userArr.add(googleUser.email);
+    userArr.add(googleAuth.accessToken);
+
+
+    return userArr;
+  }
 
   bool isAlreadyLogged() {
     var user = FirebaseAuth.instance.currentUser;
@@ -11,6 +26,7 @@ class UserAuthProvider {
   }
 
   void signOutGoogle() async {
+    userArr.clear();
     await _googleSignIn.signOut();
   }
 
@@ -20,6 +36,7 @@ class UserAuthProvider {
 
   Future<void> signInWithGoogle() async {
     // Google sign in
+    
     final googleUser = await _googleSignIn.signIn();
     final googleAuth = await googleUser.authentication;
     print("googleAuth $googleAuth");
@@ -39,5 +56,6 @@ class UserAuthProvider {
 
     print("Google auth token: ${googleAuth.accessToken}");
     print("Firebase auth token: $firebaseAuthToken");
+
   }
 }

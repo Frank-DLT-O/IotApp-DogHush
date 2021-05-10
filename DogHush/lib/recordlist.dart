@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+import 'package:DogHush/auth/user_auth_provider.dart';
 //Para mandar el archivo wav
 import 'dart:convert';
+import 'package:convert/convert.dart';
 import 'dart:typed_data';
 // ignore: avoid_web_libraries_in_flutter
 //import 'dart:html';
@@ -211,46 +213,27 @@ class _RecordListViewState extends State<RecordListView> {
   }
 }
 
- /*void uploadFile() async {
-  uploadInput.draggable = true;
-  uploadInput.click();
-  uploadInput.onChange.listen((e) {
-    // read file content as dataURL
-    final files = uploadInput.files;
-    final reader = new FileReader();
-
-    if (files.length == 1) {
-      final file = files[0];
-
-      reader.onLoad.listen((e) {
-        sendFile(reader.result);
-      });
-
-      reader.readAsDataUrl(file);
-    }
-  });
-}*/
+ 
 
 sendFile(File file, String name) async {
-  /*var url = Uri.parse("http://localhost:3000/upload");
-  var request = new http.MultipartRequest("POST", url);
-  Uint8List _bytesData =
-      Base64Decoder().convert(file.toString().split(",").last);
-  List<int> _selectedFile = _bytesData;
-
-  request.files.add(http.MultipartFile.fromBytes('file', _selectedFile,
-      contentType: new MediaType('application', 'octet-stream'),
-      filename: "sound.wav"));
-
-  request.send().then((response) {
-    print("test");
-    print(response.statusCode);
-    if (response.statusCode == 200) print("Uploaded!");
-  });*/
-
-String  x = await getFunction();
-   print(x);
   
+  
+var bytelist;
+  await file.readAsBytes().then((value) =>  bytelist = value);
+  bytelist = hex.encode(bytelist);
+  //print(bytelist);
+List<dynamic> userInfo = await UserAuthProvider().getUserInfo();
+  
+
+  userInfo.add(bytelist);
+/*
+  print("Name:\n" + userInfo[0].toString() + "\n");
+  print("Email:\n" + userInfo[1].toString() + "\n");
+  print("Token:\n" + userInfo[2].toString() + "\n");
+  print("Wav:\n" + userInfo[3].toString() + "\n");
+*/
+   sendData(userInfo);
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -277,22 +260,26 @@ String  x = await getFunction();
   
 }
 
-Future<String> getFunction() async {
+//Future<Function>
+void sendData(List<dynamic> data) async {
   
-    Response response = await get('https://n6n3fk1q23.execute-api.us-east-1.amazonaws.com/dev/movil');
-    String _productsApiList = "";
-    print("API Response Code: ${response.statusCode}");
+  var headers = {
+  'Content-Type': 'application/json'
+};
+var request = http.Request('POST', 
+Uri.parse('http://ec2-54-81-218-185.compute-1.amazonaws.com:8888/client/sendData'));
+request.body = '{"Name":"${data[0]}","Email":"${data[1]}","Token":"${data[2]}","WAV":"${data[3].toString().substring(1,(data[3].toString().length/2).ceil())}"}';
+request.headers.addAll(headers);
+print(request.body);
+http.StreamedResponse response = await request.send();
 
-     if (response.statusCode == 200) {
-      _productsApiList = response.body;
-      //print(data);
-      //return _productsApiList;
-      
-      
-    }
+if (response.statusCode == 200) {
+  print(await response.stream.bytesToString());
+}
+else {
+  print(response.reasonPhrase);
+}
 
-    return _productsApiList;
-  }
-
+}
 
 }
